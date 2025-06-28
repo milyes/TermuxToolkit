@@ -1,0 +1,160 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Menu Panel -->
+    <div class="col-lg-3 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0">🛠️ Menu Principal</h2>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <button id="detect-commands" class="list-group-item list-group-item-action">
+                        1️⃣ Détecter les commandes Ubuntu
+                    </button>
+                    <button id="show-commands" class="list-group-item list-group-item-action">
+                        2️⃣ Afficher toutes les options disponibles
+                    </button>
+                    <button id="select-execute" class="list-group-item list-group-item-action">
+                        3️⃣ Sélectionner et exécuter une commande
+                    </button>
+                    <button id="manual-execute" class="list-group-item list-group-item-action">
+                        4️⃣ Saisir manuellement une commande
+                    </button>
+                    <button id="add-command" class="list-group-item list-group-item-action">
+                        5️⃣ Ajouter une commande personnalisée
+                    </button>
+                    <button id="delete-command" class="list-group-item list-group-item-action">
+                        6️⃣ Supprimer une commande personnalisée
+                    </button>
+                    <button id="show-history" class="list-group-item list-group-item-action">
+                        7️⃣ Afficher l'historique des commandes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Panel -->
+    <div class="col-lg-9">
+        <!-- Result Area -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <h3 class="h5 mb-0">📌 Résultat</h3>
+                <button id="clear-result" class="btn btn-sm btn-outline-light">Effacer</button>
+            </div>
+            <div class="card-body">
+                <pre id="result-content" class="result-area">Bienvenue sur AITerminal Ubuntu Intelligence !</pre>
+            </div>
+        </div>
+
+        <!-- Action Panel - Dynamic content will be loaded here -->
+        <div id="action-panel" class="card">
+            <div class="card-header bg-dark text-white">
+                <h3 id="action-title" class="h5 mb-0">💻 Actions</h3>
+            </div>
+            <div class="card-body">
+                <!-- Default welcome content -->
+                <div id="welcome-content">
+                    <p>Bienvenue sur <strong>AITerminal Ubuntu Intelligence</strong> !</p>
+                    <p>Cette interface vous permet de :</p>
+                    <ul>
+                        <li>Détecter toutes les commandes disponibles sous Ubuntu</li>
+                        <li>Exécuter des commandes par sélection ou saisie manuelle</li>
+                        <li>Gérer des commandes personnalisées</li>
+                        <li>Consulter l'historique des exécutions</li>
+                    </ul>
+                    <p>Utilisez le menu à gauche pour commencer.</p>
+                </div>
+
+                <!-- Command Selection Panel (hidden by default) -->
+                <div id="command-selection-panel" class="d-none">
+                    <div class="mb-3">
+                        <label for="command-type" class="form-label">Type de commande</label>
+                        <select id="command-type" class="form-select">
+                            <option value="detected">Commandes détectées</option>
+                            <option value="custom">Commandes personnalisées</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="command-select" class="form-label">Sélectionner une commande</label>
+                        <select id="command-select" class="form-select"></select>
+                    </div>
+                    <button id="execute-selected" class="btn btn-primary">Exécuter</button>
+                </div>
+
+                <!-- Manual Input Panel (hidden by default) -->
+                <div id="manual-input-panel" class="d-none">
+                    <div class="mb-3">
+                        <label for="manual-command" class="form-label">Commande à exécuter</label>
+                        <input type="text" class="form-control" id="manual-command" placeholder="Entrez une commande...">
+                    </div>
+                    <button id="execute-manual" class="btn btn-primary">Exécuter</button>
+                </div>
+
+                <!-- Add Command Panel (hidden by default) -->
+                <div id="add-command-panel" class="d-none">
+                    <div class="mb-3">
+                        <label for="new-command" class="form-label">Nouvelle commande</label>
+                        <input type="text" class="form-control" id="new-command" placeholder="Entrez une nouvelle commande...">
+                    </div>
+                    <button id="save-command" class="btn btn-primary">Ajouter</button>
+                </div>
+
+                <!-- Delete Command Panel (hidden by default) -->
+                <div id="delete-command-panel" class="d-none">
+                    <div class="mb-3">
+                        <label for="command-to-delete" class="form-label">Commande à supprimer</label>
+                        <select id="command-to-delete" class="form-select"></select>
+                    </div>
+                    <button id="confirm-delete" class="btn btn-danger">Supprimer</button>
+                </div>
+
+                <!-- History Panel (hidden by default) -->
+                <div id="history-panel" class="d-none">
+                    <pre id="history-content" class="result-area"></pre>
+                </div>
+
+                <!-- Commands List Panel (hidden by default) -->
+                <div id="commands-list-panel" class="d-none">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>📂 Commandes détectées</h4>
+                            <div class="detected-commands-list overflow-auto" style="max-height: 400px;">
+                                <ul id="detected-commands-list" class="list-group"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>⭐ Commandes personnalisées</h4>
+                            <div class="custom-commands-list overflow-auto" style="max-height: 400px;">
+                                <ul id="custom-commands-list" class="list-group"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmation-message">Êtes-vous sûr de vouloir exécuter cette commande ?</p>
+                <p id="command-to-confirm" class="fw-bold"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="confirm-action">Confirmer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
